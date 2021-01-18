@@ -282,7 +282,7 @@ HectorMappingRos::HectorMappingRos()
 	lastMapPublishTime = ros::Time(0,0);
 
 	//========================================================================================//
-	LoadMap();
+	// LoadMap(); //kevin
 	Error_Publisher_= node_.advertise<std_msgs::Int8>("Error",10);
 
 	protect_map = "";
@@ -1051,7 +1051,7 @@ void HectorMappingRos::commandCallback(const std_msgs::String& command)
 		// }
 	}
 
-	protect_map = command.data;
+	protect_map = command.data; //kevin
 
 
 }
