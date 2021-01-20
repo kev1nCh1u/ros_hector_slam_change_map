@@ -1177,22 +1177,28 @@ void HectorMappingRos::CreateMap()
 /*=====Anhung===========================Load Map ===============================*/
 void HectorMappingRos::LoadMap()
 {
+	slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(p_map_resolution_), p_map_size_, p_map_size_, Eigen::Vector2f(p_map_start_x_, p_map_start_y_), p_map_multi_res_levels_, hectorDrawings, debugInfoProvider);
+	slamProcessor->setUpdateFactorFree(p_update_factor_free_);
+	slamProcessor->setUpdateFactorOccupied(p_update_factor_occupied_);
+	slamProcessor->setMapUpdateMinDistDiff(p_map_update_distance_threshold_);
+	slamProcessor->setMapUpdateMinAngleDiff(p_map_update_angle_threshold_);
+
 	if(slamProcessor == NULL){
 
 		char c_yaml_path[1000];
 
-
+		
 		//yaml open
 		std::string s_file_name = P_MAP_FILE_NAME;
-
+		
 		std::string s_yaml_path = TitlePath + P_MAP_STORE_PATH;
-
+		
 		s_yaml_path = s_yaml_path + s_file_name + ".yaml";
-
+		
 		std::strcpy(c_yaml_path, s_yaml_path.c_str());
-
+		
 		std::fstream fin;
-
+		
 		fin.open(c_yaml_path, std::fstream::in);
 
 		if(!fin.is_open())
