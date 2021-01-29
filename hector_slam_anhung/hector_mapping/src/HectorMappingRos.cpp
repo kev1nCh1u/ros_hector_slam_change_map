@@ -1026,6 +1026,14 @@ void HectorMappingRos::commandCallback(const std_msgs::String& command)
 			p_navigation_ = true;
 
 		}
+		else if(command.data == "ReLoad Map"){
+
+			ROS_INFO("Start ReLoad Map");
+			ReLoadMap();
+			p_control_state_ = P_SLAM_STATE_Idle;
+			p_navigation_ = true;
+
+		}
 		else if(command.data == "navigation=true"){
 
 			ROS_INFO("Start Navigation");
@@ -1447,6 +1455,283 @@ void HectorMappingRos::LoadMap() //kevin
 
 	}
 }
+
+/*=====Anhung===========================reLoad Map ===============================*/
+void HectorMappingRos::ReLoadMap() //kevin
+{
+	std::cout << "test0" << std::endl;
+	slamProcessor = NULL;
+	// slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(p_map_resolution_), p_map_size_, p_map_size_, Eigen::Vector2f(p_map_start_x_, p_map_start_y_), p_map_multi_res_levels_, hectorDrawings, debugInfoProvider);
+	// slamProcessor->setUpdateFactorFree(p_update_factor_free_);
+	// slamProcessor->setUpdateFactorOccupied(p_update_factor_occupied_);
+	// slamProcessor->setMapUpdateMinDistDiff(p_map_update_distance_threshold_);
+	// slamProcessor->setMapUpdateMinAngleDiff(p_map_update_angle_threshold_);
+
+	std::cout << "test1" << std::endl;
+
+	if(slamProcessor == NULL){
+		std::cout << "test2" << std::endl;
+
+		char c_yaml_path[1000];
+
+		
+		//yaml open
+		std::string s_file_name = P_MAP_FILE_NAME;
+		
+		std::string s_yaml_path = TitlePath + P_MAP_STORE_PATH;
+		
+		s_yaml_path = s_yaml_path + s_file_name + ".yaml";
+		
+		std::strcpy(c_yaml_path, s_yaml_path.c_str());
+		
+		std::fstream fin;
+		
+		fin.open(c_yaml_path, std::fstream::in);
+
+		if(!fin.is_open())
+		{
+
+			std::cout << "Error: the "<<s_yaml_path<<"is not opened!!" << std::endl;
+
+		}
+		else{
+
+			std::string s_number_of_map;
+
+			getline(fin,s_number_of_map);
+
+			std::string s_number_of_map_value;
+
+			getline(fin,s_number_of_map_value);
+
+			int number_of_map = std::atoi(s_number_of_map_value.c_str());
+
+			s_number_of_map = s_number_of_map + " " + s_number_of_map_value;
+
+			std::cout<<s_number_of_map<<std::endl;
+
+			std::cout<<"===============Existed Map==============="<<std::endl;
+
+			for(int i=0; i<number_of_map; i++){
+
+				std::string s_image;
+
+				std::getline(fin,s_image);
+
+				std::string s_image_path;
+
+				std::getline(fin,s_image_path);
+
+				s_image_path = "/ros_map/myMap_10.pgm"; //kevin
+
+				s_image_path = TitlePath + s_image_path;
+
+				s_image = s_image + " " + s_image_path;
+
+				std::cout<<s_image<<std::endl;
+
+				std::string s_resolution;
+
+				std::getline(fin,s_resolution);
+
+				std::string s_resolution_value;
+
+				std::getline(fin,s_resolution_value);
+
+				float resolution_value = std::atof(s_resolution_value.c_str());
+
+				std::cout<<s_resolution<<" "<<resolution_value<<std::endl;
+
+				std::string s_origin;
+
+				std::getline(fin,s_origin);
+
+				std::string s_origin_x;
+
+				std::getline(fin,s_origin_x);
+
+				std::string s_origin_y;
+
+				std::getline(fin,s_origin_y);
+
+				std::string s_origin_t;
+
+				std::getline(fin,s_origin_t);
+
+				s_origin = s_origin + " (" + s_origin_x + " , " + s_origin_y + " , " + s_origin_t + ")";
+
+				std::cout<<s_origin<<std::endl;
+
+				std::string s_negate;
+
+				std::getline(fin,s_negate);
+
+				std::string s_negate_value;
+
+				std::getline(fin,s_negate_value);
+
+				int negate_value = std::atoi(s_negate_value.c_str());
+
+				std::cout<<s_negate<<" "<<negate_value<<std::endl;
+
+				std::string s_occupied_thresh;
+
+				std::getline(fin,s_occupied_thresh);
+
+				std::string s_occupied_thresh_value;
+
+				std::getline(fin,s_occupied_thresh_value);
+
+				float occupied_thresh_value = std::atof(s_occupied_thresh_value.c_str());
+
+				std::cout<<s_occupied_thresh<<" "<<occupied_thresh_value<<std::endl;
+
+				std::string s_free_thresh;
+
+				std::getline(fin,s_free_thresh);
+
+				std::string s_free_thresh_value;
+
+				std::getline(fin,s_free_thresh_value);
+
+				float free_thresh_value = std::atof(s_free_thresh_value.c_str());
+
+				std::cout<<s_free_thresh<<" "<<free_thresh_value<<std::endl;
+
+				//======Create Map========/
+
+				//Load Image.
+				SDL_Surface* img;
+
+				// Load the image using SDL.  If we get NULL back, the image load failed.mapTopic_
+				if(!(img = IMG_Load(s_image_path.c_str())))
+				{
+					std::string errmsg = std::string("failed to open image file \"") +
+						s_image;
+					throw std::runtime_error(errmsg);
+				}
+
+				std::cout<<"Map Size: "<<img->w<<" , "<<img->h<<std::endl;
+
+				//First we can Create or Map space.
+				if(i == 0){
+
+					p_map_resolution_ = resolution_value;
+
+					slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(resolution_value), int(img->w), int(img->h), Eigen::Vector2f(0.5, 0.5), number_of_map, hectorDrawings, debugInfoProvider);
+					slamProcessor->setUpdateFactorFree(p_update_factor_free_);
+					slamProcessor->setUpdateFactorOccupied(p_update_factor_occupied_);
+					slamProcessor->setMapUpdateMinDistDiff(p_map_update_distance_threshold_);
+					slamProcessor->setMapUpdateMinAngleDiff(p_map_update_angle_threshold_);
+
+					int mapLevels = slamProcessor->getMapLevels();
+					mapLevels = 1;
+
+					std::string mapTopic_ = "map";
+
+					for (int i = 0; i < mapLevels; ++i)
+					{
+						mapPubContainer.push_back(MapPublisherContainer());
+						slamProcessor->addMapMutex(i, new HectorMapMutex());
+
+						std::string mapTopicStr(mapTopic_);
+
+						if (i != 0)
+						{
+							mapTopicStr.append("_" + boost::lexical_cast<std::string>(i));
+						}
+
+						std::string mapMetaTopicStr(mapTopicStr);
+						mapMetaTopicStr.append("_metadata");
+
+						MapPublisherContainer& tmp = mapPubContainer[i];
+						tmp.mapPublisher_ = node_.advertise<nav_msgs::OccupancyGrid>(mapTopicStr, 1, true);
+						tmp.mapMetadataPublisher_ = node_.advertise<nav_msgs::MapMetaData>(mapMetaTopicStr, 1, true);
+
+						if ( (i == 0) && p_advertise_map_service_)
+						{
+							tmp.dynamicMapServiceServer_ = node_.advertiseService("dynamic_map", &HectorMappingRos::mapCallback, this);
+						}
+
+						setServiceGetMapData(tmp.map_, slamProcessor->getGridMap(i));
+
+						if ( i== 0){
+							mapPubContainer[i].mapMetadataPublisher_.publish(mapPubContainer[i].map_.map.info);
+						}
+					}
+
+				}
+
+				//When we have the memory of map, we can initialize it.
+				unsigned char* pixels;
+				unsigned char* p;
+				unsigned char value;
+				int rowstride, n_channels, avg_channels;
+				int color_sum;
+				float color_avg;
+
+
+				rowstride = img->pitch;
+
+				n_channels = img->format->BytesPerPixel;
+
+				std::cout<<"n_channels: "<<n_channels<<std::endl;
+
+
+				//Copy pixel data into the map structure.
+				pixels = (unsigned char*)(img->pixels);
+				for(int l=0; l < img->h; l++){
+
+					for(int k=0; k< img->w; k++){
+
+						p = pixels + l*rowstride + k*n_channels;
+
+						color_sum = 0;
+
+						for(int m=0; m < n_channels; m++)
+							color_sum += *(p + (m));
+						color_avg = color_sum / (float)n_channels;
+
+						if(color_avg < 50) color_avg = 0;
+						else if(color_avg < 230) color_avg = 205;
+						else color_avg = 254;
+
+						float occ = float(255 - color_avg) / 255.0;
+
+						int index = (img->h - l - 1) * (img->w) + k;
+
+						float value = 0;
+
+						if(occ > occupied_thresh_value){
+							value = 80.0;
+							slamProcessor->setMapValue(i, index, value);
+						}
+						else if(occ < free_thresh_value){
+							value =-1;
+							slamProcessor->setMapValue(i, index, value);
+						}
+						else{
+							value = 0;
+							slamProcessor->setMapValue(i, index, value);
+						}
+
+
+					}
+
+				}
+
+
+				SDL_FreeSurface(img);
+				img = NULL;
+
+			}
+		}
+
+		fin.close();
+
+	}
+}
+
 
 /*=====Anhung===========================Save Map ===============================*/
 void HectorMappingRos::SaveMap()
