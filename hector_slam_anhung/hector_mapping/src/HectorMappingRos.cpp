@@ -282,7 +282,7 @@ HectorMappingRos::HectorMappingRos()
 	lastMapPublishTime = ros::Time(0,0);
 
 	//========================================================================================//
-	// LoadMap(); //kevin
+	LoadMap(); //kevin
 	Error_Publisher_= node_.advertise<std_msgs::Int8>("Error",10);
 
 	protect_map = "";
@@ -1175,15 +1175,20 @@ void HectorMappingRos::CreateMap()
 }
 
 /*=====Anhung===========================Load Map ===============================*/
-void HectorMappingRos::LoadMap()
+void HectorMappingRos::LoadMap() //kevin
 {
-	slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(p_map_resolution_), p_map_size_, p_map_size_, Eigen::Vector2f(p_map_start_x_, p_map_start_y_), p_map_multi_res_levels_, hectorDrawings, debugInfoProvider);
-	slamProcessor->setUpdateFactorFree(p_update_factor_free_);
-	slamProcessor->setUpdateFactorOccupied(p_update_factor_occupied_);
-	slamProcessor->setMapUpdateMinDistDiff(p_map_update_distance_threshold_);
-	slamProcessor->setMapUpdateMinAngleDiff(p_map_update_angle_threshold_);
+	std::cout << "test0" << std::endl;
+	slamProcessor = NULL;
+	// slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(p_map_resolution_), p_map_size_, p_map_size_, Eigen::Vector2f(p_map_start_x_, p_map_start_y_), p_map_multi_res_levels_, hectorDrawings, debugInfoProvider);
+	// slamProcessor->setUpdateFactorFree(p_update_factor_free_);
+	// slamProcessor->setUpdateFactorOccupied(p_update_factor_occupied_);
+	// slamProcessor->setMapUpdateMinDistDiff(p_map_update_distance_threshold_);
+	// slamProcessor->setMapUpdateMinAngleDiff(p_map_update_angle_threshold_);
+
+	std::cout << "test1" << std::endl;
 
 	if(slamProcessor == NULL){
+		std::cout << "test2" << std::endl;
 
 		char c_yaml_path[1000];
 

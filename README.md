@@ -9,3 +9,5 @@
     rostopic pub /Command std_msgs/String "Load Map"
 
     rostopic pub /syscommand std_msgs/String "reset"
+
+    rostopic pub /Command std_msgs/String "navigation=true"
