@@ -1028,6 +1028,10 @@ void HectorMappingRos::commandCallback(const std_msgs::String& command)
 		}
 		else if(command.data == "ReLoad Map"){
 
+			// p_navigation_ = false;
+			// p_control_state_ = P_SLAM_STATE_RUN;
+			// HectorMappingRos::KevinTest();
+
 			ROS_INFO("Start ReLoad Map");
 			ReLoadMap();
 			p_control_state_ = P_SLAM_STATE_Idle;
@@ -1630,39 +1634,40 @@ void HectorMappingRos::ReLoadMap() //kevin
 					int mapLevels = slamProcessor->getMapLevels();
 					mapLevels = 1;
 
-					std::string mapTopic_ = "map";
+					// std::string mapTopic_ = "map";
 
-					for (int i = 0; i < mapLevels; ++i)
-					{
-						std::cout << "test map" << std::endl;
-						mapPubContainer.push_back(MapPublisherContainer());
-						slamProcessor->addMapMutex(i, new HectorMapMutex());
+					// for (int i = 0; i < mapLevels; ++i)
+					// {
+					// 	std::cout << "test map" << std::endl;
+					// 	mapPubContainer.push_back(MapPublisherContainer());
+					// 	slamProcessor->addMapMutex(i, new HectorMapMutex());
 
-						std::string mapTopicStr(mapTopic_);
+					// 	std::string mapTopicStr(mapTopic_);
 
-						if (i != 0)
-						{
-							mapTopicStr.append("_" + boost::lexical_cast<std::string>(i));
-						}
+					// 	if (i != 0)
+					// 	{
+					// 		mapTopicStr.append("_" + boost::lexical_cast<std::string>(i));
+					// 	}
 
-						std::string mapMetaTopicStr(mapTopicStr);
-						mapMetaTopicStr.append("_metadata");
+					// 	std::string mapMetaTopicStr(mapTopicStr);
+					// 	mapMetaTopicStr.append("_metadata");
 
-						MapPublisherContainer& tmp = mapPubContainer[i];
-						tmp.mapPublisher_ = node_.advertise<nav_msgs::OccupancyGrid>(mapTopicStr, 1, true);
-						tmp.mapMetadataPublisher_ = node_.advertise<nav_msgs::MapMetaData>(mapMetaTopicStr, 1, true);
+					// 	MapPublisherContainer& tmp = mapPubContainer[i];
+					// 	tmp.mapPublisher_ = node_.advertise<nav_msgs::OccupancyGrid>(mapTopicStr, 1, true);
+					// 	tmp.mapMetadataPublisher_ = node_.advertise<nav_msgs::MapMetaData>(mapMetaTopicStr, 1, true);
+					// 	std::cout << "test map tmp" << std::endl;
 
-						if ( (i == 0) && p_advertise_map_service_)
-						{
-							tmp.dynamicMapServiceServer_ = node_.advertiseService("dynamic_map", &HectorMappingRos::mapCallback, this);
-						}
+					// 	if ( (i == 0) && p_advertise_map_service_)
+					// 	{
+					// 		tmp.dynamicMapServiceServer_ = node_.advertiseService("dynamic_map", &HectorMappingRos::mapCallback, this);
+					// 	}
 
-						setServiceGetMapData(tmp.map_, slamProcessor->getGridMap(i));
+					// 	setServiceGetMapData(tmp.map_, slamProcessor->getGridMap(i));
 
-						if ( i== 0){
-							mapPubContainer[i].mapMetadataPublisher_.publish(mapPubContainer[i].map_.map.info);
-						}
-					}
+					// 	if ( i== 0){
+					// 		mapPubContainer[i].mapMetadataPublisher_.publish(mapPubContainer[i].map_.map.info);
+					// 	}
+					// }
 
 				}
 
@@ -1977,5 +1982,11 @@ void HectorMappingRos::LoadTitlePath()
 
 	TitlePath = "/" + recv_pkg[1] + "/" + recv_pkg[2] + "/" + recv_pkg[3] + "/" + recv_pkg[4];
 	std::cout<<"TitlePath  " <<TitlePath <<std::endl;
+
+}
+
+void HectorMappingRos::KevinTest()
+{
+
 
 }
