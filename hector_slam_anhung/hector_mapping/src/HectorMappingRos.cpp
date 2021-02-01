@@ -1032,7 +1032,7 @@ void HectorMappingRos::commandCallback(const std_msgs::String& command)
 			ReLoadMap();
 			p_control_state_ = P_SLAM_STATE_Idle;
 			p_navigation_ = true;
-
+			
 		}
 		else if(command.data == "navigation=true"){
 
@@ -1185,6 +1185,7 @@ void HectorMappingRos::CreateMap()
 /*=====Anhung===========================Load Map ===============================*/
 void HectorMappingRos::LoadMap() //kevin
 {
+	std::cout << "############### LoadMap ####################" << std::endl;
 	std::cout << "test0" << std::endl;
 	slamProcessor = NULL;
 	// slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(p_map_resolution_), p_map_size_, p_map_size_, Eigen::Vector2f(p_map_start_x_, p_map_start_y_), p_map_multi_res_levels_, hectorDrawings, debugInfoProvider);
@@ -1459,6 +1460,7 @@ void HectorMappingRos::LoadMap() //kevin
 /*=====Anhung===========================reLoad Map ===============================*/
 void HectorMappingRos::ReLoadMap() //kevin
 {
+	std::cout << "############### ReLoadMap ####################" << std::endl;
 	std::cout << "test0" << std::endl;
 	slamProcessor = NULL;
 	// slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(p_map_resolution_), p_map_size_, p_map_size_, Eigen::Vector2f(p_map_start_x_, p_map_start_y_), p_map_multi_res_levels_, hectorDrawings, debugInfoProvider);
@@ -1619,6 +1621,7 @@ void HectorMappingRos::ReLoadMap() //kevin
 					p_map_resolution_ = resolution_value;
 
 					slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(resolution_value), int(img->w), int(img->h), Eigen::Vector2f(0.5, 0.5), number_of_map, hectorDrawings, debugInfoProvider);
+					// slamProcessor = new hectorslam::HectorSlamProcessor(static_cast<float>(p_map_resolution_), p_map_size_, p_map_size_, Eigen::Vector2f(p_map_start_x_, p_map_start_y_), p_map_multi_res_levels_, hectorDrawings, debugInfoProvider); //kevin
 					slamProcessor->setUpdateFactorFree(p_update_factor_free_);
 					slamProcessor->setUpdateFactorOccupied(p_update_factor_occupied_);
 					slamProcessor->setMapUpdateMinDistDiff(p_map_update_distance_threshold_);
@@ -1631,6 +1634,7 @@ void HectorMappingRos::ReLoadMap() //kevin
 
 					for (int i = 0; i < mapLevels; ++i)
 					{
+						std::cout << "test map" << std::endl;
 						mapPubContainer.push_back(MapPublisherContainer());
 						slamProcessor->addMapMutex(i, new HectorMapMutex());
 

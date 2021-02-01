@@ -14,4 +14,6 @@ catkin_make -DCMAKE_BUILD_TYPE=Release
 
     rostopic pub /Command std_msgs/String "navigation=true"
 
+    rostopic pub /Command d_msgs/String "navigation=false"
+
     rostopic pub /Command std_msgs/String "ReLoad Map"
