@@ -790,7 +790,7 @@ void HectorMappingRos::publishMap(MapPublisherContainer& mapPublisher, const hec
 	nav_msgs::GetMap::Response& map_ (mapPublisher.map_);
 
 	//only update map if it changed
-	if (lastGetMapUpdateIndex != gridMap.getUpdateIndex())
+	if (lastGetMapUpdateIndex != gridMap.getUpdateIndex() || 1) //kevin
 	{
 
 		int sizeX = gridMap.getSizeX();
@@ -970,12 +970,14 @@ void HectorMappingRos::publishMapLoop(double map_pub_period)
 
 	while(ros::ok())
 	{
+		// std::cout << "publishMapLoop" << std::endl; //kevin debug
 		if(mapPubContainer.size() > 0){
 
 			ros::Time mapTime (ros::Time::now());
 
 			publishMap(mapPubContainer[0],slamProcessor->getGridMap(0), mapTime, slamProcessor->getMapMutex(0));
-
+			
+			// std::cout << "publishMapLoop if" << std::endl;
 		}
 
 		r.sleep();
