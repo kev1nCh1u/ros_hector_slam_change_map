@@ -3,6 +3,8 @@
 ## build
 catkin_make -DCMAKE_BUILD_TYPE=Release
 ## start
+    roslaunch urg_node urg_lidar.launch 
+
     roslaunch hector_slam_launch tutorial.launch
 
     rosbag play -l src/slam_bag/Team_Hector_MappingBox_RoboCup_2011_Rescue_Arena.bag
